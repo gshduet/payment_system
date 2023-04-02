@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sparkle"
+version = "0.1.0"
+description = ""
+authors = ["gshduet <modis2199@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.1.7"
+djangorestframework = "^3.14.0"
+django-extensions = "^3.2.1"
+django-cors-headers = "^3.14.0"
+django-dotenv = "^1.4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
