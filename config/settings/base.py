@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    'users',
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -175,16 +176,22 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
-    )
+    ),
+    'EXCEPTION_HANDLER': 'config.exceptions.api_exceptions.custom_exception_handler',
 }
+
 
 REST_USE_JWT = True
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
 
-    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.MyTokenObtainPairSerializer",
-    # "TOKEN_OBTAIN_SERIALIZER": "utils.token.MyTokenObtainPairSerializer",
+    'USER_ID_FIELD': 'serial_code',
+    'USER_ID_CLAIM': 'serial_code',
+
+    # 'TOKEN_OBTAIN_SERIALIZER': 'utils.token.MyTokenObtainPairSerializer',
 }

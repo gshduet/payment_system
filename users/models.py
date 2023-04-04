@@ -1,16 +1,17 @@
 import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from django.db import models
+from django.db import utils, models
 from django.utils.translation import gettext_lazy as _
 
 from utils.models import TimeStampModel
+from config.exceptions import custom_exceptions
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email: str, password: str = None):
         if not email:
-            raise ValueError(_('The Email field must be set'))
+            raise ValueError(_('EMAIL_REQUIRED'))
 
         user = self.model(email=self.normalize_email(email))
         user.set_password(password)
@@ -21,7 +22,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email: str, password: str = None):
         if not email:
-            raise ValueError(_('The Email field must be set'))
+            raise ValueError(_('EMAIL_REQUIRED'))
 
         superuser = self.create_user(email=email, password=password)
 
@@ -50,3 +51,11 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        try:
+            super().save(*args, **kwargs)
+        except utils.IntegrityError as e:
+            if 'unique constraint' in str(e).lower() and 'email' in str(e).lower():
+                raise custom_exceptions.DuplicateEmailError({'email': 'EMAIL_ALREADY_EXIST'})
+            raise e

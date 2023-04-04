@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate
-from django.utils.timezone import now
+from django.db import utils
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-
-from users.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from users.models import User
 
-class UserSerializer(serializers.ModelSerializer):
+
+class UserSignupSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=127)
     password = serializers.CharField(write_only=True)
 
@@ -16,32 +17,35 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-        )
+                email=validated_data['email'],
+                password=validated_data['password'],
+            )
         return user
-    
+
+class UserSigninSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=127)
+    password = serializers.CharField(write_only=True)
+    user = serializers.SerializerMethodField()
+    access_token = serializers.SerializerMethodField()
+    refresh_token = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('email', 'password')
+
     def validate(self, data):
         email = data['email']
         password = data['password']
         
-        user = authenticate(email=email, password=password)
+        user = authenticate(request=self.context.get('request'), email=email, password=password)
 
-        if user is not None:
-            user.last_login = now()
-            user.save()
-            
-            token = RefreshToken.for_user(user)
-            refresh_token = str(token)
-            access_token = str(token.access_token)
+        if user is None:
+            raise serializers.ValidationError(detail=_('INVALID_EMAIL_OR_PASSWORD'), code='AUTHORIZATION')
 
-            data = {
-                'user': user,
-                'refresh_token': refresh_token,
-                'access_token': access_token
-            }
+        token = RefreshToken.for_user(user)
 
-            return data
+        data['user'] = user
+        data['refresh_token'] = str(token)
+        data['access_token'] = str(token.access_token)
 
-        else:
-            raise serializers.ValidationError('INVALID_EMAIL_OR_PASSWORD')
+        return data
