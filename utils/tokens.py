@@ -1,7 +1,11 @@
 from django.middleware import csrf
 
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt import tokens
+
+
+class JWTAccessToken(tokens.BlacklistMixin, tokens.AccessToken):
+    pass
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

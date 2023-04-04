@@ -1,14 +1,14 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from rest_framework.test import APIClient, APITestCase
+from rest_framework import test
 
 from users.models import User
 
 
-class SignUpViewTest(APITestCase):
+class SignUpViewTest(test.APITestCase):
     def setUp(self):
-        self.client = APIClient()
+        self.client = test.APIClient()
         self.signup_url = reverse('signup')
 
     def test_success_signup(self):
@@ -70,9 +70,9 @@ class SignUpViewTest(APITestCase):
 
 
 
-class SignInViewTest(APITestCase):
+class SignInViewTest(test.APITestCase):
     def setUp(self):
-        self.client = APIClient()
+        self.client = test.APIClient()
         self.login_url = reverse('login')
         self.user = User.objects.create_user(
             email='test@test.com', password='password123'
@@ -144,9 +144,9 @@ class SignInViewTest(APITestCase):
         )
 
 
-class SignOutViewTest(APITestCase):
+class SignOutViewTest(test.APITestCase):
     def setUp(self):
-        self.client = APIClient()
+        self.client = test.APIClient()
         self.login_url = reverse('login')
         self.logout_url = reverse('logout')
         self.user = User.objects.create_user(
@@ -169,9 +169,9 @@ class SignOutViewTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {'MESSAGE': 'SIGN_OUT_SUCCESS'})
-        self.assertEqual(BlacklistedToken.objects.count(), 1)
+        self.assertEqual(BlacklistedToken.objects.count(), 2)
         
-    def test_failure_logout(self):
+    def test_failure_logout_token_omission(self):
         response = self.client.post(self.logout_url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

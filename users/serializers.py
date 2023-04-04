@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.db import utils
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken

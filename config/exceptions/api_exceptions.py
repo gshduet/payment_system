@@ -3,7 +3,7 @@ from rest_framework.views import exception_handler
 from rest_framework.response import Response
 
 from config.exceptions.exception_codes import STATUS_RSP_INTERNAL_ERROR
-from config.exceptions import custom_exceptions
+from config.exceptions.custom_exceptions import CustomDictException
 
 
 def custom_exception_handler(exc, context):
@@ -54,7 +54,7 @@ def custom_exception_handler(exc, context):
             error_dict['code'] = response.status_code
             error_dict['message'] = exc.detail
 
-        elif isinstance(exc, custom_exceptions.CustomDictException):
+        elif isinstance(exc, CustomDictException):
             error_dict['code'] = exc.detail.get('code')
             error_dict['message'] = exc.detail.get('default_message')
 

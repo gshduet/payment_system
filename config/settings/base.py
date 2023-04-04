@@ -193,5 +193,6 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'serial_code',
     'USER_ID_CLAIM': 'serial_code',
 
-    # 'TOKEN_OBTAIN_SERIALIZER': 'utils.token.MyTokenObtainPairSerializer',
+    'AUTH_TOKEN_CLASSES': ('utils.tokens.JWTAccessToken',),
+    # 'TOKEN_OBTAIN_SERIALIZER': 'utils.tokens.MyTokenObtainPairSerializer',
 }

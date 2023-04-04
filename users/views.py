@@ -5,13 +5,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.serializers import UserSignupSerializer, UserSigninSerializer
+from users import serializers
+from utils.tokens import JWTAccessToken
 
 
 class SignUpView(APIView):
 
     permission_classes = [AllowAny]
-    serializer_class = UserSignupSerializer
+    serializer_class = serializers.UserSignupSerializer
 
     def post(self, request):
         """
@@ -39,7 +40,7 @@ class SignUpView(APIView):
 class SignInView(APIView):
 
     permission_classes = [AllowAny]
-    serializer_class = UserSigninSerializer
+    serializer_class = serializers.UserSigninSerializer
 
     def post(self, request):
         """
@@ -88,7 +89,7 @@ class SignOutView(APIView):
         """
         로그아웃 API
         클라이언트로부터 로그아웃 요청을 받을 경우 쿠키에 저장된 refresh_token, access_token을 제거합니다.
-        이후 해당 유저에게 발급했던 refresh_token을 blacklist에 등록하여 무효화합니다.
+        이후 해당 유저에게 발급했던 refresh_token, access_token을을 blacklist에 등록하여 무효화합니다.
 
         만약 요청헤더의 Authorization Header에 access_token이 존재하지 않거나 토큰의 유효기간 만료, 변조가 확인될 경우
         401 상태코드와 'message': 'Authentication credentials were not provided.'를 반환합니다.
@@ -100,6 +101,9 @@ class SignOutView(APIView):
 
         refresh_token = RefreshToken(request.COOKIES['refresh_token'])
         refresh_token.blacklist()
+        access_token = JWTAccessToken(request.COOKIES['access_token'])
+        access_token.blacklist()
+
         response.delete_cookie('refresh_token')
         response.delete_cookie('access_token')
 
