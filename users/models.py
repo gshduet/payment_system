@@ -1,6 +1,6 @@
 import uuid
 
-from django.contrib.auth import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import utils, models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,7 +8,7 @@ from utils.models import TimeStampModel
 from config.exceptions import custom_exceptions
 
 
-class UserManager(models.BaseUserManager):
+class UserManager(BaseUserManager):
     def create_user(self, email: str, password: str = None):
         if not email:
             raise ValueError(_('EMAIL_REQUIRED'))
@@ -34,7 +34,7 @@ class UserManager(models.BaseUserManager):
         return superuser
 
 
-class User(models.AbstractBaseUser, models.PermissionsMixin, TimeStampModel):
+class User(AbstractBaseUser, PermissionsMixin, TimeStampModel):
     serial_code = models.UUIDField(_('user personal number'), primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(_('email address'), max_length=127, unique=True)
 
