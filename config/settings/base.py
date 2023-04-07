@@ -49,6 +49,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'users',
+    'payments',
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -140,7 +141,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Django settings ====================================================================================
 
 # REMOVE_APPEND_SLASH_WARNING
-APPEND_SLASH = False
+# APPEND_SLASH = False
 
 CSRF_COOKIE_HTTPONLY = True
 

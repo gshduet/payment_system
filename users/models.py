@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from utils.models import TimeStampModel
 from config.exceptions import custom_exceptions
 
+from payments.models import Prepayment
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email: str, password: str = None):
@@ -16,7 +18,10 @@ class UserManager(BaseUserManager):
         user = self.model(email=self.normalize_email(email))
         user.set_password(password)
 
+        prepayment = Prepayment(user=user, amount=0)
+
         user.save(using=self._db)
+        prepayment.save()
 
         return user
 

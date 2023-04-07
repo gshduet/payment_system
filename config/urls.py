@@ -28,5 +28,6 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
     
-    path('users', include('users.urls'))
+    path('users/', include('users.urls')),
+    path('payments/', include('payments.urls')),
 ]

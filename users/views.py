@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.views import APIView
@@ -14,6 +15,7 @@ class SignUpView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.UserSignupSerializer
 
+    @transaction.atomic
     def post(self, request):
         """
         회원가입 API
