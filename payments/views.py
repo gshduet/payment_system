@@ -123,3 +123,26 @@ class PaymentRequestView(APIView):
         if response.status_code == 200:
             serializer.is_valid(raise_exception=True)
             serializer.save(user=request.user, status=response['status'])
+
+        """
+        위의 로직을 따라 결제생성API와의 통신을 성공하고 'paymentKey'를 발급 받아야 결제승인API와의 통신이 가능합니다.
+        발급 받은 'paymentKey'를 통해 새 params를 만들고 결제승인API URL로 새 요청을 전송하여 결제를 마무리하고
+        응답 데이터를 바탕으로 후속조치를 진행합니다.
+        예시는 아래와 같습니다.
+        ```
+        payment_key = response['paymentKey']
+        url = "https://api.tosspayments.com/v1/payments/confirm"
+
+        params = {
+            'orderId': order_id,
+            'amount': final_charge_amount,
+            'paymentKey': payment_key
+        }
+
+        response = requests.post(url, data=json.dumps(params), headers=headers)
+        ```
+
+        예정사항: 응답 데이터(response)를 해체하여 DB에 저장
+        응답 완료 후 리다이렉트 경로 지정
+        상황 별 에러메시지 및 테스트코드 작성
+        """
